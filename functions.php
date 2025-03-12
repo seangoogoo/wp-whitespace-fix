@@ -28,21 +28,21 @@ function lm_debug_and_fix_buttons($data) {
         return $data;
     }
 
-    write_to_log('==== BUTTON DEBUG: Starting enhanced button analysis ====');
+    //write_to_log('==== BUTTON DEBUG: Starting enhanced button analysis ====');
 
     //* Extract complete button blocks using WordPress comment markers
     //* This approach is better than regex on HTML alone because it captures the full block context
     if (preg_match_all('/<!-- wp:button.*?-->.*?<!-- \/wp:button -->/s', $content, $button_blocks)) {
-        write_to_log('Found ' . count($button_blocks[0]) . ' button blocks');
+        //write_to_log('Found ' . count($button_blocks[0]) . ' button blocks');
 
         //* Examine each button block to identify its content
         foreach ($button_blocks[0] as $index => $block) {
-            write_to_log("Button block #{$index}: " . $block);
+            //write_to_log("Button block #{$index}: " . $block);
 
             //* Extract just the content between <a> tags to check if it's whitespace
             if (preg_match('/<a.*?>(.*?)<\/a>/s', $block, $match)) {
                 $link_content = $match[1];
-                write_to_log("Button #{$index} content: '" . htmlspecialchars($link_content) . "', Length: " . strlen($link_content));
+                //write_to_log("Button #{$index} content: '" . htmlspecialchars($link_content) . "', Length: " . strlen($link_content));
 
                 //* For whitespace content, show character codes for debugging
                 //* This helps identify exactly what characters we're dealing with (space, tab, newline, etc.)
@@ -51,7 +51,7 @@ function lm_debug_and_fix_buttons($data) {
                     for ($i = 0; $i < strlen($link_content); $i++) {
                         $char_codes[] = ord($link_content[$i]);
                     }
-                    write_to_log("Button #{$index} content char codes: " . implode(', ', $char_codes));
+                    //write_to_log("Button #{$index} content char codes: " . implode(', ', $char_codes));
                 }
             }
         }
@@ -71,7 +71,7 @@ function lm_debug_and_fix_buttons($data) {
                 for ($i = 0; $i < strlen($whitespace); $i++) {
                     $codes[] = ord($whitespace[$i]);
                 }
-                write_to_log("Found whitespace button with chars: " . implode(', ', $codes));
+                //write_to_log("Found whitespace button with chars: " . implode(', ', $codes));
 
                 //* Create a replacement block that's identical except for the content
                 //* We use $1 to preserve all attributes of the <a> tag
@@ -82,23 +82,23 @@ function lm_debug_and_fix_buttons($data) {
                 $modified = str_replace($block, $replacement_block, $modified);
 
                 //* Log before/after for debugging and verification
-                write_to_log("Replacing button block: " . htmlspecialchars($block));
-                write_to_log("With modified block: " . htmlspecialchars($replacement_block));
+                //write_to_log("Replacing button block: " . htmlspecialchars($block));
+                //write_to_log("With modified block: " . htmlspecialchars($replacement_block));
             }
         }
 
         //* Only update the content if we actually made changes
         if ($content !== $modified) {
-            write_to_log('Successfully replaced whitespace with &nbsp; in button blocks!');
+            //write_to_log('Successfully replaced whitespace with &nbsp; in button blocks!');
             $data['post_content'] = $modified;
         } else {
-            write_to_log('No whitespace replacements made in button blocks');
+            //write_to_log('No whitespace replacements made in button blocks');
         }
     } else {
-        write_to_log('No button blocks found using block pattern');
+        //write_to_log('No button blocks found using block pattern');
     }
 
-    write_to_log('==== BUTTON DEBUG: Finished enhanced button analysis ====');
+    //write_to_log('==== BUTTON DEBUG: Finished enhanced button analysis ====');
 
     return $data;
 }
